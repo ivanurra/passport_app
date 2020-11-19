@@ -8,9 +8,11 @@ const User = require('../models/User')
 const Quote = require('../models/Quote')
 
 
+//SIGN-UP
+
 router.get('/signup', (req, res, next) => {
   res.render('signup');
-});
+})
 
 router.post('/signup', (req, res)=>{
 
@@ -36,6 +38,8 @@ router.post('/signup', (req, res)=>{
     .catch((err)=>res.send(err)) 
 })
 
+//LOG-IN
+
 router.get('/login', (req, res)=>{
   res.render('login', {errorMessage: req.flash('error')})
 })
@@ -47,14 +51,20 @@ router.post('/login', passport.authenticate("local", {
   passReqToCallback: true
 }))
 
+//PRIVATE PAGE
+
 router.get('/private-page', ensureLogin.ensureLoggedIn(), (req, res)=>{
   res.render('private', {user: req.user.username})
 })
+
+//LOG-OUT
 
 router.get('/logout', (req, res)=>{
   req.logout()
   res.redirect('/')
 })
+
+// checkForAuthentification
 
 const checkForAuthentification = (req, res, next)=>{
   if(req.isAuthenticated()){
@@ -63,6 +73,8 @@ const checkForAuthentification = (req, res, next)=>{
     res.redirect('login')
   }
 } 
+
+//QUOTES
 
 router.get('/quotes', checkForAuthentification, (req, res)=>{
 
@@ -75,9 +87,13 @@ router.get('/quotes', checkForAuthentification, (req, res)=>{
     })
 })
 
+//CREATE QUOTE
+
 router.get('/create-quote', checkForAuthentification, (req, res)=>{
   res.render('createQuote')
 })
+
+//QUOTES
 
 router.post('/quotes', (req, res)=>{
   const {artist, songName, quoteContent} = req.body
@@ -88,6 +104,8 @@ router.post('/quotes', (req, res)=>{
     .catch((err) => res.send(err))
 })
 
+// ALL-QUOTES
+
 router.get('/all-quotes', checkForAuthentification, (req, res)=>{
   Quote.find({})
     .then((result)=>{
@@ -97,6 +115,8 @@ router.get('/all-quotes', checkForAuthentification, (req, res)=>{
       res.send(err)
     })
 })
+
+//QUOTE ID
 
 router.get('/quote/:id', (req, res)=>{
   const id = req.params.id
